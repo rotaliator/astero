@@ -50,6 +50,7 @@ const hero = k.add([
     k.area({scale: [0.5, 0.9]}),
     k.anchor("center"),
     k.body(),
+    k.z(1),
     "hero",
     {
         dead: false
@@ -58,13 +59,49 @@ const hero = k.add([
 
 
 k.loadSpriteAtlas("sprites/sci-fi-platformer-tiles-32x32-extension-p1.png", {
-    "floor-middle": {
+    "hpipe-start": {
+        x: 0,
+        y: 32,
+        width: 32,
+        height: 32,
+    },
+    "hpipe-middle": {
         x: 0,
         y: 0,
         width: 32,
         height: 32,
     },
-    "floor-short": {
+    "hpipe-end": {
+        x: 32,
+        y: 32,
+        width: 32,
+        height: 32,
+    },
+    "hpipe-short": {
+        x: 32,
+        y: 0,
+        width: 32,
+        height: 32,
+    },
+    "vpipe-start": {
+        x: 3 * 32,
+        y: 0,
+        width: 32,
+        height: 32,
+    },
+    "vpipe-middle": {
+        x: 2 * 32,
+        y: 0,
+        width: 32,
+        height: 32,
+    },
+    "vpipe-end": {
+        x: 3 * 32,
+        y: 32,
+        width: 32,
+        height: 32,
+    },
+    "vpipe-short": {
         x: 32,
         y: 0,
         width: 32,
@@ -82,12 +119,6 @@ k.loadSpriteAtlas("sprites/sci-fi-platformer-tiles-32x32-extension-p1.png", {
         width: 32,
         height: 32,
     },
-    "bg-tile1": {
-        x: 3 * 32,
-        y: 3 * 32,
-        width: 32,
-        height: 32,
-    },
     "grid-vert": {
         x: 12 * 32,
         y: 4 * 32,
@@ -100,20 +131,32 @@ k.loadSpriteAtlas("sprites/sci-fi-platformer-tiles-32x32-extension-p1.png", {
         width: 32,
         height: 32,
     },
+    "decor1": {
+        x: 3 * 32,
+        y: 3 * 32,
+        width: 32,
+        height: 32,
+    },
+    "decor2": {
+        x: 1 * 32,
+        y: 2 * 32,
+        width: 32,
+        height: 32,
+    },
 })
 
 k.scene("main")
 k.addLevel([
-    "                                                           ",
-    "                                                           ",
-    "                           ^   ^    ^    ^                     ",
-    "                         =====================  ",
-    "                         i$    v    v        i    ",
-    "           $$         |  i$                  i     ",
-    "  %  ====             |  i$                  i    ",
-    "     i  i             |  i                   i     ",
-    "     i  i  ^^  = >    |  i             ^     i    ",
-    "================================    =============================================",
+    "                                                                      ",
+    "                                                                      ",
+    "                           ^   ^    ^    ^                            ",
+    "                         <===================>                        ",
+    "                         i     v    v        i                     A  ",
+    "                      A  i                   i                     |  ",
+    "  %  <==>             |  i                   i                     |  ",
+    "  $  i  i             |  i                   i                     |  ",
+    "     i  i  ^^   <>    |  i             ^     i                     |  ",
+    "<==============================>    <================================>",
 
 ], {
     // define the size of tile block
@@ -121,13 +164,43 @@ k.addLevel([
     tileHeight: 32,
     // define what each symbol means, by a function returning a component list (what will be passed to add())
     tiles: {
+        "<": () => [
+            k.sprite("hpipe-start"),
+            k.area(),
+            k.body({ isStatic: true }),
+        ],
         "=": () => [
-            k.sprite("floor-middle"), //"floor"
+            k.sprite("hpipe-middle"),
+            k.area(),
+            k.body({ isStatic: true }),
+        ],
+        ">": () => [
+            k.sprite("hpipe-end"),
+            k.area(),
+            k.body({ isStatic: true }),
+        ],
+        "-": () => [
+            k.sprite("hpipe-short"),
+            k.area(),
+            k.body({ isStatic: true }),
+        ],
+        "A": () => [
+            k.sprite("vpipe-start"),
             k.area(),
             k.body({ isStatic: true }),
         ],
         "|": () => [
-            k.sprite("floor-short"), //"floor"
+            k.sprite("vpipe-middle"),
+            k.area(),
+            k.body({ isStatic: true }),
+        ],
+        "V": () => [
+            k.sprite("vpipe-end"),
+            k.area(),
+            k.body({ isStatic: true }),
+        ],
+        ":": () => [
+            k.sprite("vpipe-short"),
             k.area(),
             k.body({ isStatic: true }),
         ],
@@ -146,12 +219,17 @@ k.addLevel([
         "i": () => [
             k.sprite("grid-vert"),
             k.area(),
+            k.z(2),
             "bg",
         ],
-        "&": () => [
-            k.sprite("bg-tile1"),
+        "$": () => [
+            k.sprite("decor1"),
             k.area(),
-            k.z(-2),
+            "bg",
+        ],
+        "%": () => [
+            k.sprite("decor2"),
+            k.area(),
             "bg",
         ],
 
