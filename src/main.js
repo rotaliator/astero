@@ -12,6 +12,18 @@ const SPEED = 280
 const JUMP = 800
 const SHAKE = 4
 const GRAVITY = 2200
+const CAM_POS = 300
+
+
+const START_POS = [220,300]
+
+const BOXES = [
+//    [1600,170],
+    [180,300],
+    [550,420],
+    [1520,180],
+]
+
 
 const k = kaboom({ global: false })
 const soundHit = k.loadSound("hurt", "/sounds/explosion.wav")
@@ -23,7 +35,6 @@ k.setBackground("#0c0229")
 
 k.canvas.focus()
 
-const START_POS = [220,30]
 
 k.loadSpriteAtlas("sprites/daxbotsheet_v1.png",{
     "hero": {
@@ -143,20 +154,32 @@ k.loadSpriteAtlas("sprites/sci-fi-platformer-tiles-32x32-extension-p1.png", {
         width: 32,
         height: 32,
     },
+    "decor3": {
+        x: 2 * 32,
+        y: 2 * 32,
+        width: 32,
+        height: 32,
+    },
 })
 
 k.scene("main")
 k.addLevel([
-    "                                                                      ",
-    "                                                                      ",
-    "                           ^   ^    ^    ^                            ",
-    "                         <===================>                        ",
-    "                         i     v    v        i                     A  ",
-    "                      A  i                   i                     |  ",
-    "  %  <==>             |  i                   i                     |  ",
-    "  $  i  i             |  i                   i                     |  ",
-    "     i  i  ^^   <>    |  i             ^     i                     |  ",
-    "<==============================>    <================================>",
+    "                                                     A       ",
+    "                                                     |       ",
+    "                                                     |       ",
+    "                                                     |       ",
+    "                                                     |      ",
+    "                                                     V       ",
+    "                                                                           ",
+    "                                            <=======>                        ",
+    "                           ^   ^    ^    ^                                   ",
+    "                         <===================>                                       ",
+    "                         i     v    v        i                       A               ",
+    "                      A  i                   i     <===>             |               ",
+    "  %  <==>             |  i                   i       i               |               ",
+    "  $  i  i             |  i                   i       i               |               ",
+    "     i  i  ^^   <>    |  i             ^     i       i               |               ",
+    "<==============================>    <===============================================>",
 
 ], {
     // define the size of tile block
@@ -242,6 +265,9 @@ k.addLevel([
     },
 })
 
+const print = console.log
+
+
 function centerCam(pos) {
     k.camPos(Math.trunc(pos.x), Math.trunc(pos.y))
     console.log(pos)
@@ -249,7 +275,7 @@ function centerCam(pos) {
 }
 
 function centerCamHorizontal(pos) {
-    k.camPos([Math.trunc(hero.pos.x), 110])
+    k.camPos([Math.trunc(hero.pos.x), CAM_POS])
 }
 
 
@@ -285,6 +311,24 @@ function jump() {
     hero.play("jump")
 }
 
+function initGame() {
+    hero.moveTo(START_POS)
+    hero.dead = false
+    hero.jump(1)
+    hero.play("jump")
+    for (const box of BOXES) {
+        k.add([
+            k.pos(box),
+            k.sprite("decor3"),
+            k.area(),
+            k.anchor("center"),
+            k.body(),
+            "box",
+        ])
+    }
+}
+
+
 function die(){
     if (!hero.dead) {
         hero.dead = true
@@ -292,10 +336,8 @@ function die(){
         k.shake(SHAKE)
         k.play("hurt")
         k.wait(0.6, () => {
-            hero.moveTo(START_POS)
-            hero.dead = false
-            hero.jump(1)
-            hero.play("jump")
+            k.destroyAll("box")
+            initGame()
         })
     }
 }
@@ -326,3 +368,6 @@ k.onKeyPress("f", (c) => {
 hero.onGround(() => {
     hero.play("idle")
 })
+
+
+initGame()
