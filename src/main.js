@@ -1,6 +1,7 @@
 /*
   tiles: https://opengameart.org/content/extension-for-sci-fi-platformer-tiles-32x32
   hero: https://opengameart.org/content/animated-robot
+  space ship: https://opengameart.org/content/parts2-art-space-ships
   sounds generated in: https://sfxr.me/
 */
 
@@ -15,7 +16,10 @@ const GRAVITY = 2200
 const CAM_POS = 300
 
 
-const START_POS = [220,300]
+let START_POS = [220,300]
+const SHIP_POS = [2546,340]
+
+START_POS = [SHIP_POS[0] - 200, SHIP_POS[1]]
 
 const BOXES = [
 //    [1600,170],
@@ -60,7 +64,7 @@ const hero = k.add([
     k.sprite("hero"),
     k.area({scale: [0.5, 0.9]}),
     k.anchor("center"),
-    k.body(),
+    k.body(), // {maxVelocity: 800}
     k.z(1),
     "hero",
     {
@@ -68,6 +72,24 @@ const hero = k.add([
     }
 ])
 
+k.loadSprite("ship1", "sprites/ship1.png")
+const ship = k.add([
+    k.pos(SHIP_POS),
+    k.anchor("center"),
+    k.area({scale: [0.2, 0.6]}),
+    k.sprite("ship1"),
+])
+
+
+
+function flyToNextLevel(){
+    k.tween(ship.pos.y, -100, 1, (p)=>{ship.pos.y = p})
+}
+
+
+ship.onCollide("hero", ()=> {
+    flyToNextLevel()
+})
 
 k.loadSpriteAtlas("sprites/sci-fi-platformer-tiles-32x32-extension-p1.png", {
     "hpipe-start": {
@@ -166,20 +188,20 @@ k.scene("main")
 k.addLevel([
     "                                                     A       ",
     "                                                     |       ",
-    "                                                     |       ",
-    "                                                     |       ",
-    "                                                     |      ",
-    "                                                     V       ",
-    "                                                                           ",
-    "                                            <=======>                        ",
-    "                           ^   ^    ^    ^                                   ",
-    "                         <===================>                                       ",
-    "                         i     v    v        i                       A               ",
-    "                      A  i                   i     <===>             |               ",
-    "  %  <==>             |  i                   i       i               |               ",
-    "  $  i  i             |  i                   i       i               |               ",
-    "     i  i  ^^   <>    |  i             ^     i       i               |               ",
-    "<==============================>    <===============================================>",
+    "                                                     |                    i         i  ",
+    "                                                     |                    i         i  ",
+    "                                                     |                    i         i  ",
+    "                                                     V                    i         i  ",
+    "                                                                          i         i  ",
+    "                                            <=======>                     i         i  ",
+    "                           ^   ^    ^    ^                                i         i  ",
+    "                         <===================>                            i         i  ",
+    "                         i     v    v        i                       A    i         i  ",
+    "                      A  i                   i     <===>             |    i         i     ",
+    "  %  <==>             |  i                   i       i               |    i         i     ",
+    "  $  i  i             |  i                   i       i               |    i         i     ",
+    "     i  i  ^^   <>    |  i             ^     i       i               |    i         i     ",
+    "<==============================>    <=================================================>",
 
 ], {
     // define the size of tile block
