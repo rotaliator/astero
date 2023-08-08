@@ -39,6 +39,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
 }
 
 const soundHit = k.loadSound("hurt", "sounds/explosion.wav")
+const soundHitGround = k.loadSound("hitGround", "sounds/hit.wav")
 
 k.setGravity(GRAVITY)
 k.camScale(1.8)
@@ -398,6 +399,7 @@ k.onKeyPress("f", (c) => {
 
 hero.onGround(() => {
     hero.play("idle")
+    k.play("hitGround", {volume: 0.5})
 })
 
 
