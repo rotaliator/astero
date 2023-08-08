@@ -19,21 +19,29 @@ const CAM_POS = 300
 let START_POS = [220,300]
 const SHIP_POS = [2546,340]
 
-START_POS = [SHIP_POS[0] - 200, SHIP_POS[1]]
+//START_POS = [SHIP_POS[0] - 200, SHIP_POS[1]]
 
 const BOXES = [
-//    [1600,170],
     [180,300],
     [550,420],
     [1520,180],
 ]
 
+let k
+if (typeof DEBUG !== 'undefined' && DEBUG) {
+    console.log("debug")
+    k = kaboom({global: false})
+} else {
+    k = kaboom({
+        global: false,
+        debug: false
+    })
+}
 
-const k = kaboom({ global: false })
 const soundHit = k.loadSound("hurt", "/sounds/explosion.wav")
 
 k.setGravity(GRAVITY)
-k.camScale(1.7)
+k.camScale(1.8)
 k.setBackground("#0c0229")
 
 
@@ -64,7 +72,7 @@ const hero = k.add([
     k.sprite("hero"),
     k.area({scale: [0.5, 0.9]}),
     k.anchor("center"),
-    k.body(), // {maxVelocity: 800}
+    k.body({maxVelocity: 600}), // {maxVelocity: 800}
     k.z(1),
     "hero",
     {
@@ -252,13 +260,11 @@ k.addLevel([
         "^": () => [
             k.sprite("spike-up"),
             k.area({scale: [0.8, 0.9]}),
-            //k.anchor("center"),
             "spike",
         ],
         "v": () => [
             k.sprite("spike-down"),
             k.area({scale: [0.8, 0.9]}),
-            //k.anchor("center"),
             "spike",
         ],
         "i": () => [
@@ -279,12 +285,15 @@ k.addLevel([
         ],
 
     },
+    /*
     wildcardTile: (symbol) => {
         [
             k.sprite("bg-tile1"),
-            //k.area()
+            k.area(),
+            "background"
         ]
-    },
+        },
+        */
 })
 
 const print = console.log
