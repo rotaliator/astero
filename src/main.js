@@ -38,7 +38,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
     })
 }
 
-const soundHit = k.loadSound("hurt", "/sounds/explosion.wav")
+const soundHit = k.loadSound("hurt", "sounds/explosion.wav")
 
 k.setGravity(GRAVITY)
 k.camScale(1.8)
