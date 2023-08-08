@@ -1,9 +1,8 @@
 {
   "name": "astero",
   "scripts": {
-    "build": "esbuild --bundle src/main.js --outfile=www/main.js --minify",
-    "dev": "esbuild --bundle src/main.js --define:DEBUG=true --outfile=www/main.js --servedir=www",
-    "bundle": "npm run build && mkdir -p dist && zip -r dist/game.zip www -x \"**/.DS_Store\""
+    "build": "esbuild --bundle src/main.js --outfile=docs/main.js --minify",
+    "dev": "esbuild --bundle src/main.js --define:DEBUG=true --outfile=docs/main.js --servedir=docs"
   },
   "dependencies": {
     "kaboom": "3000.0.15"
