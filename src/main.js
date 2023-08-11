@@ -16,30 +16,29 @@ const GRAVITY = 2200
 const CAM_POS = 300
 
 
-let START_POS = [220,300]
-const SHIP_POS = [2546,340]
+const START_POS = [220,300]
+const SHIP_POS = [2546,200]
+const SHIP_END_POS = [2546, -180]
 
-//START_POS = [SHIP_POS[0] - 200, SHIP_POS[1]]
+// const START_POS = [SHIP_POS[0] - 200, SHIP_POS[1]]
 
 const BOXES = [
     [180,300],
     [550,420],
     [1520,180],
+    [2700,400],
 ]
 
-let k
-if (typeof DEBUG !== 'undefined' && DEBUG) {
-    console.log("debug")
-    k = kaboom({global: false})
-} else {
-    k = kaboom({
-        global: false,
-        debug: false
-    })
-}
+const debug = (typeof DEBUG !== 'undefined' && DEBUG)
+const k = kaboom({
+    global: false,
+    debug: debug
+})
+
 
 const soundHit = k.loadSound("hurt", "sounds/explosion.wav")
 const soundHitGround = k.loadSound("hitGround", "sounds/hit.wav")
+const soundIgnitionGround = k.loadSound("ignition", "sounds/ignition.wav")
 
 k.setGravity(GRAVITY)
 k.camScale(1.8)
@@ -84,7 +83,7 @@ const hero = k.add([
 k.loadSprite("ship1", "sprites/ship1.png")
 const ship = k.add([
     k.pos(SHIP_POS),
-    k.anchor("center"),
+    k.anchor("top"),
     k.area({scale: [0.2, 0.6]}),
     k.sprite("ship1"),
 ])
@@ -92,7 +91,9 @@ const ship = k.add([
 
 
 function flyToNextLevel(){
-    k.tween(ship.pos.y, -100, 1, (p)=>{ship.pos.y = p})
+    hero.destroy()
+    k.play("ignition")
+    k.tween(ship.pos.y, SHIP_END_POS[1], 2, (p)=>{ship.pos.y = p})
 }
 
 
