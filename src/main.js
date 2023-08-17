@@ -9,7 +9,11 @@
 import kaboom from "kaboom"
 import "kaboom/global"
 
+
+//const BACKGROUND_COLOR = "#0c0229"
+const BACKGROUND_COLOR = [12, 2, 41]
 const SPEED = 280
+const MAX_VELOCITY = 600
 const JUMP = 800
 const SHAKE = 4
 const GRAVITY = 2200
@@ -18,9 +22,9 @@ const CAM_POS = 300
 
 const START_POS = [220,300]
 const SHIP_POS = [2546,200]
-const SHIP_END_POS = [2546, -180]
+const SHIP_END_POS = [2546, -220]
 
-// const START_POS = [SHIP_POS[0] - 200, SHIP_POS[1]]
+//const START_POS = [SHIP_POS[0] - 200, SHIP_POS[1]]
 
 const BOXES = [
     [180,300],
@@ -31,6 +35,10 @@ const BOXES = [
 
 const debug = (typeof DEBUG !== 'undefined' && DEBUG)
 const k = kaboom({
+    width: 640,
+    height: 480,
+    background: BACKGROUND_COLOR,
+    crisp: true,
     global: false,
     debug: debug
 })
@@ -41,12 +49,6 @@ const soundHitGround = k.loadSound("hitGround", "sounds/hit.wav")
 const soundIgnitionGround = k.loadSound("ignition", "sounds/ignition.wav")
 
 k.setGravity(GRAVITY)
-k.camScale(1.8)
-k.setBackground("#0c0229")
-
-
-k.canvas.focus()
-
 
 k.loadSpriteAtlas("sprites/daxbotsheet_v1.png",{
     "hero": {
@@ -72,7 +74,7 @@ const hero = k.add([
     k.sprite("hero"),
     k.area({scale: [0.5, 0.9]}),
     k.anchor("center"),
-    k.body({maxVelocity: 600}), // {maxVelocity: 800}
+    k.body({maxVelocity: MAX_VELOCITY}),
     k.z(1),
     "hero",
     {
