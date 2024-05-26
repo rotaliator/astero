@@ -5,7 +5,7 @@
     "dev": "esbuild --bundle src/main.js --define:DEBUG=true --outfile=docs/main.js --servedir=docs"
   },
   "dependencies": {
-    "kaboom": "3000.0.15"
+    "kaboom": "3000.1.17"
   },
   "devDependencies": {
     "esbuild": "^0.18.17"
