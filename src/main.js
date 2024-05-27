@@ -316,14 +316,14 @@ function centerCamHorizontal(pos) {
 
 
 k.onUpdate(() => {
-    if (k.isKeyDown("a")) {
+    if (k.isKeyDown("a")||k.isGamepadButtonDown("dpad-left")) {
         hero.move(-SPEED, 0)
         hero.flipX = true
         if (hero.isGrounded() && hero.curAnim() !== "walk") {
             hero.play("walk")
         }
     }
-    if (k.isKeyDown("d")) {
+    if (k.isKeyDown("d")||k.isGamepadButtonDown("dpad-right")) {
         hero.move(SPEED, 0)
         hero.flipX = false
         if (hero.isGrounded() && hero.curAnim() !== "walk") {
@@ -336,6 +336,13 @@ k.onKeyRelease("d", ()=>{
     hero.stop()
 })
 k.onKeyRelease("a", ()=>{
+    hero.stop()
+})
+
+k.onGamepadButtonRelease("dpad-right", ()=>{
+    hero.stop()
+})
+k.onGamepadButtonRelease("dpad-left", ()=>{
     hero.stop()
 })
 
@@ -382,6 +389,9 @@ k.onKeyPress("space", () => {
     jump()
 })
 k.onKeyPress("w", () => {
+    jump()
+})
+k.onGamepadButtonPress("east", () => {
     jump()
 })
 
