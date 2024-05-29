@@ -6,9 +6,11 @@
 */
 
 
-import kaboom from "kaboom"
+// import kaboom from "kaboom"
 import "kaboom/global"
+import {k} from "./init"
 
+import {addButton} from "./utils"
 
 //const BACKGROUND_COLOR = "#0c0229"
 const BACKGROUND_COLOR = [12, 2, 41]
@@ -34,20 +36,12 @@ const BOXES = [
     [2700,400],
 ]
 
-const debug = (typeof DEBUG !== 'undefined' && DEBUG)
-const k = kaboom({
-    width: 640,
-    height: 480,
-    background: BACKGROUND_COLOR,
-    crisp: true,
-    global: false,
-    debug: debug
-})
-
 
 const soundHit = k.loadSound("hurt", "sounds/explosion.wav")
 const soundHitGround = k.loadSound("hitGround", "sounds/hit.wav")
 const soundIgnitionGround = k.loadSound("ignition", "sounds/ignition.wav")
+var hero
+var ship
 
 k.setGravity(GRAVITY)
 
@@ -69,40 +63,68 @@ k.loadSpriteAtlas("sprites/daxbotsheet_v1.png",{
     },
 })
 
-
-const hero = k.add([
-    k.pos(START_POS),
-    k.sprite("hero"),
-    k.area({scale: [0.5, 0.9]}),
-    k.anchor("center"),
-    k.body({maxVelocity: MAX_VELOCITY}),
-    k.z(1),
-    "hero",
-    {
-        dead: false
-    }
-])
-
 k.loadSprite("ship1", "sprites/ship1.png")
-const ship = k.add([
-    k.pos(SHIP_POS),
-    k.anchor("top"),
-    k.area({scale: [0.2, 0.6]}),
-    k.sprite("ship1"),
-])
 
+function initHero() {
+    const hero = k.add([
+        k.pos(START_POS),
+        k.sprite("hero"),
+        k.area({scale: [0.5, 0.9]}),
+        k.anchor("center"),
+        k.body({maxVelocity: MAX_VELOCITY}),
+        k.z(1),
+        "hero",
+        {
+            dead: false
+        }
+    ])
 
+    hero.onCollide("spike", () => {
+        die()
+    })
+
+    hero.onUpdate(() => {
+        // centerCam(hero.pos)
+        centerCamHorizontal(hero.pos)
+        if (!hero.dead && hero.pos.y > 500) {
+            die()
+        }
+    })
+
+    hero.onGround(() => {
+        hero.play("idle")
+        k.play("hitGround", {volume: 0.5})
+    })
+    return hero
+}
+
+function initShip() {
+    const ship = k.add([
+        k.pos(SHIP_POS),
+        k.anchor("top"),
+        k.area({scale: [0.2, 0.6]}),
+        k.sprite("ship1"),
+    ])
+
+    ship.onCollide("hero", async ()=> {
+        flyToNextLevel();
+        await new Promise(r => setTimeout(r, 2000))
+        addButton("Play again?", k.camPos(), () => {
+            initGame()
+        }, ["play-again-button"])
+        const enterHandler = k.onKeyPress("enter", () => {
+            initGame()
+            enterHandler.cancel()
+        })
+    })
+    return ship
+}
 
 function flyToNextLevel(){
     hero.destroy()
     k.play("ignition")
     k.tween(ship.pos.y, SHIP_END_POS[1], 2, (p)=>{ship.pos.y = p})
 }
-
-
-ship.onCollide("hero", ()=> {
-    flyToNextLevel()
-})
 
 k.loadSpriteAtlas("sprites/sci-fi-platformer-tiles-32x32-extension-p1.png", {
     "hpipe-start": {
@@ -355,8 +377,12 @@ function jump() {
 }
 
 function initGame() {
-    hero.moveTo(START_POS)
-    hero.dead = false
+    if (ship) {ship.destroy()}
+    if (hero) {hero.destroy()}
+    k.destroyAll("box")
+    k.destroyAll("play-again-button")
+    hero = initHero()
+    ship = initShip()
     hero.jump(1)
     hero.play("jump")
     for (const box of BOXES) {
@@ -378,8 +404,7 @@ function die(){
         k.addKaboom(hero.pos),
         k.shake(SHAKE)
         k.play("hurt")
-        k.wait(0.6, () => {
-            k.destroyAll("box")
+        k.wait(0.7, () => {
             initGame()
         })
     }
@@ -395,26 +420,8 @@ k.onGamepadButtonPress("east", () => {
     jump()
 })
 
-hero.onCollide("spike", () => {
-    die()
-})
-
-hero.onUpdate(() => {
-    // centerCam(hero.pos)
-    centerCamHorizontal(hero.pos)
-    if (!hero.dead && hero.pos.y > 500) {
-        die()
-    }
-})
-
 k.onKeyPress("f", (c) => {
     k.setFullscreen(!k.isFullscreen())
 })
-
-hero.onGround(() => {
-    hero.play("idle")
-    k.play("hitGround", {volume: 0.5})
-})
-
 
 initGame()
