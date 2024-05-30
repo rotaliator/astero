@@ -27,7 +27,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build
-    - run: sed -i -E "s/main\.js\?h=[0-9,a-f]+/main.js?h=$(md5sum docs/main.js | cut -c1-10)/g" docs/index.html
+    - run: update_hash.sh
     - name: commit&push
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
