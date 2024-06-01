@@ -2,6 +2,7 @@
   tiles: https://opengameart.org/content/extension-for-sci-fi-platformer-tiles-32x32
   hero: https://opengameart.org/content/animated-robot
   space ship: https://opengameart.org/content/parts2-art-space-ships
+  spiders: https://opengameart.org/content/lpc-spider
   sounds generated in: https://sfxr.me/
 */
 
@@ -9,16 +10,13 @@
 // import kaboom from "kaboom"
 import "kaboom/global"
 import {k} from "./init"
+import * as config from "./init"
 
 import {addButton} from "./utils"
+import {createBox, createSpider} from "./entities"
+
 
 //const BACKGROUND_COLOR = "#0c0229"
-const BACKGROUND_COLOR = [12, 2, 41]
-const SPEED = 280
-const MAX_VELOCITY = 600
-const JUMP = 800
-const SHAKE = 4
-const GRAVITY = 2200
 const CAM_POS = 300
 
 
@@ -36,6 +34,16 @@ const BOXES = [
     [2700,400],
 ]
 
+const SPIDERS = [
+    [650,420],
+    [850,420],
+    [1140,400],
+    [2250,400],
+    [2450,400],
+    [2600,400],
+    [2750,400],
+]
+
 
 const soundHit = k.loadSound("hurt", "sounds/explosion.wav")
 const soundHitGround = k.loadSound("hitGround", "sounds/hit.wav")
@@ -43,7 +51,7 @@ const soundIgnitionGround = k.loadSound("ignition", "sounds/ignition.wav")
 var hero
 var ship
 
-k.setGravity(GRAVITY)
+k.setGravity(config.GRAVITY)
 
 k.loadSpriteAtlas("sprites/daxbotsheet_v1.png",{
     "hero": {
@@ -71,7 +79,7 @@ function initHero() {
         k.sprite("hero"),
         k.area({scale: [0.5, 0.9]}),
         k.anchor("center"),
-        k.body({maxVelocity: MAX_VELOCITY}),
+        k.body({maxVelocity: config.MAX_VELOCITY}),
         k.z(1),
         "hero",
         {
@@ -79,7 +87,7 @@ function initHero() {
         }
     ])
 
-    hero.onCollide("spike", () => {
+    hero.onCollide("kills", () => {
         die()
     })
 
@@ -287,12 +295,12 @@ k.addLevel([
         "^": () => [
             k.sprite("spike-up"),
             k.area({scale: [0.8, 0.9]}),
-            "spike",
+            "spike", "kills"
         ],
         "v": () => [
             k.sprite("spike-down"),
             k.area({scale: [0.8, 0.9]}),
-            "spike",
+            "spike", "kills"
         ],
         "i": () => [
             k.sprite("grid-vert"),
@@ -339,14 +347,14 @@ function centerCamHorizontal(pos) {
 
 k.onUpdate(() => {
     if (k.isKeyDown("a")||k.isGamepadButtonDown("dpad-left")) {
-        hero.move(-SPEED, 0)
+        hero.move(-config.SPEED, 0)
         hero.flipX = true
         if (hero.isGrounded() && hero.curAnim() !== "walk") {
             hero.play("walk")
         }
     }
     if (k.isKeyDown("d")||k.isGamepadButtonDown("dpad-right")) {
-        hero.move(SPEED, 0)
+        hero.move(config.SPEED, 0)
         hero.flipX = false
         if (hero.isGrounded() && hero.curAnim() !== "walk") {
             hero.play("walk")
@@ -371,7 +379,7 @@ k.onGamepadButtonRelease("dpad-left", ()=>{
 
 function jump() {
     if (hero.isGrounded()) {
-        hero.jump(JUMP)
+        hero.jump(config.JUMP)
     }
     hero.play("jump")
 }
@@ -379,21 +387,17 @@ function jump() {
 function initGame() {
     if (ship) {ship.destroy()}
     if (hero) {hero.destroy()}
-    k.destroyAll("box")
+    k.destroyAll("destroy-after")
     k.destroyAll("play-again-button")
     hero = initHero()
     ship = initShip()
     hero.jump(1)
     hero.play("jump")
     for (const box of BOXES) {
-        k.add([
-            k.pos(box),
-            k.sprite("decor3"),
-            k.area(),
-            k.anchor("center"),
-            k.body(),
-            "box",
-        ])
+        createBox(box)
+    }
+    for (const spider of SPIDERS) {
+        createSpider(spider)
     }
 }
 
@@ -402,7 +406,7 @@ function die(){
     if (!hero.dead) {
         hero.dead = true
         k.addKaboom(hero.pos),
-        k.shake(SHAKE)
+        k.shake(config.SHAKE)
         k.play("hurt")
         k.wait(0.7, () => {
             initGame()
@@ -423,5 +427,11 @@ k.onGamepadButtonPress("east", () => {
 k.onKeyPress("f", (c) => {
     k.setFullscreen(!k.isFullscreen())
 })
+
+
+// k.onMousePress(()=>{
+//     createSpider(k.mousePos(), "walk")
+// })
+
 
 initGame()
