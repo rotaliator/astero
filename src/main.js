@@ -346,14 +346,14 @@ function centerCamHorizontal(pos) {
 
 
 k.onUpdate(() => {
-    if (k.isKeyDown("a")||k.isGamepadButtonDown("dpad-left")) {
+    if (k.isKeyDown("a")||k.isKeyDown("left")||k.isGamepadButtonDown("dpad-left")) {
         hero.move(-config.SPEED, 0)
         hero.flipX = true
         if (hero.isGrounded() && hero.curAnim() !== "walk") {
             hero.play("walk")
         }
     }
-    if (k.isKeyDown("d")||k.isGamepadButtonDown("dpad-right")) {
+    if (k.isKeyDown("d")||k.isKeyDown("right")||k.isGamepadButtonDown("dpad-right")) {
         hero.move(config.SPEED, 0)
         hero.flipX = false
         if (hero.isGrounded() && hero.curAnim() !== "walk") {
@@ -366,6 +366,12 @@ k.onKeyRelease("d", ()=>{
     hero.stop()
 })
 k.onKeyRelease("a", ()=>{
+    hero.stop()
+})
+k.onKeyRelease("right", ()=>{
+    hero.stop()
+})
+k.onKeyRelease("left", ()=>{
     hero.stop()
 })
 
@@ -414,6 +420,10 @@ function die(){
     }
 }
 
+
+k.onKeyPress("up", () => {
+    jump()
+})
 k.onKeyPress("space", () => {
     jump()
 })
@@ -423,7 +433,6 @@ k.onKeyPress("w", () => {
 k.onGamepadButtonPress("east", () => {
     jump()
 })
-
 k.onKeyPress("f", (c) => {
     k.setFullscreen(!k.isFullscreen())
 })
